@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">💰 Mauzo</h2>
+
+<div class="card p-3 mb-4">
+    <h5>Ongeza Mauzo</h5>
+    <form action="/mauzo/ongeza" method="POST" class="row g-2">
+        <div class="col-md-3">
+            <select name="samaki_id" class="form-select" required>
+                <option value="">-- Chagua Samaki --</option>
+                {% for s in samaki %}
+                <option value="{{ s.id }}">{{ s.jina }} ({{ s.stock_kg }} kg)</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input name="kiasi_kg" type="number" step="0.01" class="form-control" placeholder="Kiasi (kg)" required>
+        </div>
+        <div class="col-md-2">
+            <input name="bei_kwa_kg" type="number" step="0.01" class="form-control" placeholder="Bei/kg" required>
+        </div>
+        <div class="col-md-2">
+            <select name="aina_ya_malipo" class="form-select" required>
+                <option value="cash">Cash</option>
+                <option value="deni">Deni</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select name="mteja_id" class="form-select">
+                <option value="">-- Mteja (kwa deni) --</option>
+                {% for m in wateja %}
+                <option value="{{ m.id }}">{{ m.jina }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-success w-100">+</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped bg-white align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>Tarehe</th><th>Samaki</th><th>Mteja</th>
+                <th>Kiasi</th><th>Bei/kg</th><th>Jumla</th><th>Malipo</th><th>Vitendo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in mauzo %}
+            <tr>
+                <td>{{ m.tarehe.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ m.samaki.jina if m.samaki else '-' }}</td>
+                <td>{{ m.mteja.jina if m.mteja else 'Cash' }}</td>
+                <td>
+                    <span class="view-mode-{{ m.id }}">{{ m.kiasi_kg }} kg</span>
+                    <input form="edit-form-{{ m.id }}" name="kiasi_kg" type="number" step="0.01" value="{{ m.kiasi_kg }}" class="form-control form-control-sm d-none edit-mode-{{ m.id }}">
+                </td>
+                <td>
+                    <span class="view-mode-{{ m.id }}">{{ "{:,.0f}".format(m.bei_kwa_kg) }}</span>
+                    <input form="edit-form-{{ m.id }}" name="bei_kwa_kg" type="number" step="0.01" value="{{ m.bei_kwa_kg }}" class="form-control form-control-sm d-none edit-mode-{{ m.id }}">
+                </td>
+                <td>{{ "{:,.0f}".format(m.jumla) }}</td>
+                <td>
+                    {% if m.aina_ya_malipo == 'cash' %}
+                    <span class="badge bg-success">Cash</span>
+                    {% else %}
+                    <span class="badge bg-danger">Deni</span>
+                    {% endif %}
+                </td>
+                <td style="white-space: nowrap;">
+                    <form id="edit-form-{{ m.id }}" action="/mauzo/edit/{{ m.id }}" method="POST" style="display:inline;">
+                        <button type="button" class="btn btn-sm btn-warning view-mode-{{ m.id }}" onclick="enableEdit({{ m.id }})">✏️</button>
+                        <button type="submit" class="btn btn-sm btn-success d-none edit-mode-{{ m.id }}">💾</button>
+                        <button type="button" class="btn btn-sm btn-secondary d-none edit-mode-{{ m.id }}" onclick="cancelEdit({{ m.id }})">✖️</button>
+                    </form>
+                    <form action="/mauzo/delete/{{ m.id }}" method="POST" style="display:inline;" onsubmit="return confirm('Una uhakika? Stock ya {{ m.kiasi_kg }} kg itarudi.');">
+                        <button class="btn btn-sm btn-danger view-mode-{{ m.id }}">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" class="text-center text-muted">Hakuna mauzo bado</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function enableEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+}
+
+function cancelEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+}
+</script>
+{% endblock %}

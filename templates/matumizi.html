@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">💸 Matumizi</h2>
+
+<div class="card p-3 mb-4">
+    <h5>Ongeza Matumizi</h5>
+    <form action="/matumizi" method="POST" class="row g-2">
+        <div class="col-md-4">
+            <input name="aina" class="form-control" placeholder="Aina (mfano: Barafu, Usafiri)" required>
+        </div>
+        <div class="col-md-3">
+            <input name="kiasi" type="number" step="0.01" class="form-control" placeholder="Kiasi" required>
+        </div>
+        <div class="col-md-3">
+            <input name="maelezo" class="form-control" placeholder="Maelezo">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-danger w-100">Ongeza</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped bg-white align-middle">
+        <thead class="table-primary">
+            <tr><th>Tarehe</th><th>Aina</th><th>Kiasi</th><th>Maelezo</th><th>Vitendo</th></tr>
+        </thead>
+        <tbody>
+            {% for m in matumizi %}
+            <tr>
+                <td>{{ m.tarehe.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                    <span class="view-mode-{{ m.id }}">{{ m.aina }}</span>
+                    <input form="edit-form-{{ m.id }}" name="aina" value="{{ m.aina }}" class="form-control form-control-sm d-none edit-mode-{{ m.id }}">
+                </td>
+                <td>
+                    <span class="view-mode-{{ m.id }}" class="text-danger fw-bold">{{ "{:,.0f}".format(m.kiasi) }}</span>
+                    <input form="edit-form-{{ m.id }}" name="kiasi" type="number" step="0.01" value="{{ m.kiasi }}" class="form-control form-control-sm d-none edit-mode-{{ m.id }}">
+                </td>
+                <td>
+                    <span class="view-mode-{{ m.id }}">{{ m.maelezo or '-' }}</span>
+                    <input form="edit-form-{{ m.id }}" name="maelezo" value="{{ m.maelezo or '' }}" class="form-control form-control-sm d-none edit-mode-{{ m.id }}">
+                </td>
+                <td style="white-space: nowrap;">
+                    <form id="edit-form-{{ m.id }}" action="/matumizi/edit/{{ m.id }}" method="POST" style="display:inline;">
+                        <button type="button" class="btn btn-sm btn-warning view-mode-{{ m.id }}" onclick="enableEdit({{ m.id }})">✏️</button>
+                        <button type="submit" class="btn btn-sm btn-success d-none edit-mode-{{ m.id }}">💾</button>
+                        <button type="button" class="btn btn-sm btn-secondary d-none edit-mode-{{ m.id }}" onclick="cancelEdit({{ m.id }})">✖️</button>
+                    </form>
+                    <form action="/matumizi/delete/{{ m.id }}" method="POST" style="display:inline;" onsubmit="return confirm('Una uhakika unataka kufuta matumizi haya?');">
+                        <button class="btn btn-sm btn-danger view-mode-{{ m.id }}">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted">Hakuna matumizi bado</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function enableEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+}
+
+function cancelEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+}
+</script>
+{% endblock %}

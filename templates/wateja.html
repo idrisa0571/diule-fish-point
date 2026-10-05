@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">👥 Wateja</h2>
+
+<div class="card p-3 mb-4">
+    <h5>Ongeza Mteja Mpya</h5>
+    <form action="/wateja/ongeza" method="POST" class="row g-2">
+        <div class="col-md-5">
+            <input name="jina" class="form-control" placeholder="Jina la mteja" required>
+        </div>
+        <div class="col-md-5">
+            <input name="simu" class="form-control" placeholder="Simu">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">+</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped bg-white align-middle">
+        <thead class="table-primary">
+            <tr><th>#</th><th>Jina</th><th>Simu</th><th>Deni (TSh)</th><th>Vitendo</th></tr>
+        </thead>
+        <tbody>
+            {% for m in wateja %}
+            <tr>
+                <td>{{ m.id }}</td>
+                <td>
+                    <span class="view-mode-{{ m.id }}">{{ m.jina }}</span>
+                    <input form="edit-form-{{ m.id }}" name="jina" value="{{ m.jina }}" class="form-control form-control-sm d-none edit-mode-{{ m.id }}">
+                </td>
+                <td>
+                    <span class="view-mode-{{ m.id }}">{{ m.simu or '-' }}</span>
+                    <input form="edit-form-{{ m.id }}" name="simu" value="{{ m.simu or '' }}" class="form-control form-control-sm d-none edit-mode-{{ m.id }}">
+                </td>
+                <td class="{% if m.deni > 0 %}text-danger fw-bold{% endif %}">
+                    {{ "{:,.0f}".format(m.deni) }}
+                </td>
+                <td style="white-space: nowrap;">
+                    <form id="edit-form-{{ m.id }}" action="/wateja/edit/{{ m.id }}" method="POST" style="display:inline;">
+                        <button type="button" class="btn btn-sm btn-warning view-mode-{{ m.id }}" onclick="enableEdit({{ m.id }})">✏️</button>
+                        <button type="submit" class="btn btn-sm btn-success d-none edit-mode-{{ m.id }}">💾</button>
+                        <button type="button" class="btn btn-sm btn-secondary d-none edit-mode-{{ m.id }}" onclick="cancelEdit({{ m.id }})">✖️</button>
+                    </form>
+                    <form action="/wateja/delete/{{ m.id }}" method="POST" style="display:inline;" onsubmit="return confirm('Una uhakika unataka kufuta {{ m.jina }}?');">
+                        <button class="btn btn-sm btn-danger view-mode-{{ m.id }}">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted">Hakuna wateja bado</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function enableEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+}
+
+function cancelEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+}
+</script>
+{% endblock %}

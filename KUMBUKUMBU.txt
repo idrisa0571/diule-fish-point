@@ -1,0 +1,45 @@
+========================================
+BIASHARA YA SAMAKI - KUMBUKUMBU
+========================================
+
+TAREHE: 02/10/2026
+
+LOCATION YA PROJECT:
+C:\biashara_samaki
+
+KUANZISHA MFUMO KESHO:
+1. Fungua CMD
+2. cd /d C:\biashara_samaki
+3. python app.py
+4. Fungua browser: http://127.0.0.1:5000
+
+LOGIN:
+Username: DIULE
+Password: SAMAKI2026
+
+FILES MUHIMU:
+- app.py        (ubongo wa mfumo)
+- models.py     (database tables)
+- samaki.db     (data yote - USIFUTE!)
+- templates\    (kurasa za HTML)
+- backup\       (nakala za usalama)
+
+KILICHOKAMILIKA:
+[x] Dashboard
+[x] Samaki
+[x] Wavuvi
+[x] Manunuzi
+[x] Wateja
+[x] Mauzo (Cash + Deni)
+[x] Malipo
+[x] Matumizi
+[x] Ripoti
+[x] Login/Logout
+
+KITU KINACHOFUATA:
+[ ] Faida kamili (kuhesabu gharama ya manunuzi)
+[ ] Kutafuta (search)
+[ ] Risiti
+[ ] Backup automatic
+
+========================================

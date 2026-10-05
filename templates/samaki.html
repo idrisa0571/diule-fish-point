@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">🐟 Samaki</h2>
+
+<div class="card p-3 mb-4">
+    <h5>Ongeza Samaki Mpya</h5>
+    <form action="/samaki/ongeza" method="POST" class="row g-2">
+        <div class="col-md-3">
+            <input name="jina" class="form-control" placeholder="Jina (mfano: Tilapia)" required>
+        </div>
+        <div class="col-md-2">
+            <input name="aina" class="form-control" placeholder="Aina">
+        </div>
+        <div class="col-md-2">
+            <input name="bei_kununua" type="number" step="0.01" class="form-control" placeholder="Bei kununua/kg" required>
+        </div>
+        <div class="col-md-2">
+            <input name="bei_kuuza" type="number" step="0.01" class="form-control" placeholder="Bei kuuza/kg" required>
+        </div>
+        <div class="col-md-2">
+            <input name="stock" type="number" step="0.01" class="form-control" placeholder="Stock (kg)" value="0">
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-primary w-100">+</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped bg-white align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th><th>Jina</th><th>Aina</th>
+                <th>Stock (kg)</th><th>Bei Kununua</th>
+                <th>Bei Kuuza</th><th>Faida/kg</th>
+                <th>Vitendo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in samaki %}
+            <tr>
+                <td>{{ s.id }}</td>
+                <td>
+                    <span class="view-mode-{{ s.id }}">{{ s.jina }}</span>
+                    <input form="edit-form-{{ s.id }}" name="jina" value="{{ s.jina }}" class="form-control form-control-sm d-none edit-mode-{{ s.id }}">
+                </td>
+                <td>
+                    <span class="view-mode-{{ s.id }}">{{ s.aina or '-' }}</span>
+                    <input form="edit-form-{{ s.id }}" name="aina" value="{{ s.aina or '' }}" class="form-control form-control-sm d-none edit-mode-{{ s.id }}">
+                </td>
+                <td>{{ s.stock_kg }}</td>
+                <td>
+                    <span class="view-mode-{{ s.id }}">{{ "{:,.0f}".format(s.bei_kununua) }}</span>
+                    <input form="edit-form-{{ s.id }}" name="bei_kununua" type="number" step="0.01" value="{{ s.bei_kununua }}" class="form-control form-control-sm d-none edit-mode-{{ s.id }}">
+                </td>
+                <td>
+                    <span class="view-mode-{{ s.id }}">{{ "{:,.0f}".format(s.bei_kuuza) }}</span>
+                    <input form="edit-form-{{ s.id }}" name="bei_kuuza" type="number" step="0.01" value="{{ s.bei_kuuza }}" class="form-control form-control-sm d-none edit-mode-{{ s.id }}">
+                </td>
+                <td class="text-success">{{ "{:,.0f}".format(s.faida_kwa_kg) }}</td>
+                <td style="white-space: nowrap;">
+                    <form id="edit-form-{{ s.id }}" action="/samaki/edit/{{ s.id }}" method="POST" style="display:inline;">
+                        <button type="button" class="btn btn-sm btn-warning view-mode-{{ s.id }}" onclick="enableEdit({{ s.id }})">✏️</button>
+                        <button type="submit" class="btn btn-sm btn-success d-none edit-mode-{{ s.id }}">💾</button>
+                        <button type="button" class="btn btn-sm btn-secondary d-none edit-mode-{{ s.id }}" onclick="cancelEdit({{ s.id }})">✖️</button>
+                    </form>
+                    <form action="/samaki/delete/{{ s.id }}" method="POST" style="display:inline;" onsubmit="return confirm('Una uhakika unataka kufuta {{ s.jina }}?');">
+                        <button class="btn btn-sm btn-danger view-mode-{{ s.id }}">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" class="text-center text-muted">Hakuna samaki bado</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function enableEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+}
+
+function cancelEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+}
+</script>
+{% endblock %}

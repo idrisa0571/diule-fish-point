@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">📈 Ripoti</h2>
+
+<div class="row g-3">
+    <div class="col-md-3 col-6">
+        <div class="card card-stat green p-3">
+            <small>Mapato Yote</small>
+            <h3>{{ "{:,.0f}".format(mapato) }} TSh</h3>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card card-stat red p-3">
+            <small>Gharama (Matumizi)</small>
+            <h3>{{ "{:,.0f}".format(gharama) }} TSh</h3>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card card-stat orange p-3">
+            <small>Faida</small>
+            <h3 class="{% if faida >= 0 %}text-success{% else %}text-danger{% endif %}">
+                {{ "{:,.0f}".format(faida) }} TSh
+            </h3>
+        </div>
+    </div>
+    <div class="col-md-3 col-6">
+        <div class="card card-stat red p-3">
+            <small>Madeni Yote</small>
+            <h3>{{ "{:,.0f}".format(madeni) }} TSh</h3>
+        </div>
+    </div>
+</div>
+{% endblock %}

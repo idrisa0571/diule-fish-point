@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📋 Undani wa Stock: {{ samaki.jina }}</h2>
+    <a href="/stock" class="btn btn-sm btn-outline-secondary">⬅️ Rudi</a>
+</div>
+
+<!-- ===== MUHTASARI ===== -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-4">
+        <div class="card card-stat p-3" style="border-left-color: #0dcaf0;">
+            <small class="text-muted">📥 Jumla IN</small>
+            <h3 class="text-info">{{ "%.1f"|format(in_jumla) }} kg</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card card-stat p-3" style="border-left-color: #6f42c1;">
+            <small class="text-muted">📤 Jumla OUT</small>
+            <h3 style="color: #6f42c1;">{{ "%.1f"|format(out_jumla) }} kg</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-4">
+        <div class="card card-stat green p-3">
+            <small class="text-muted">🐟 Balance</small>
+            <h3 class="text-success">{{ "%.1f"|format(balance) }} kg</h3>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MANUNUZI (IN) ===== -->
+<div class="card p-3 mb-4">
+    <h5>📥 Manunuzi (IN) — {{ samaki.jina }}</h5>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped">
+            <thead class="table-info">
+                <tr><th>Tarehe</th><th>Mvuvi</th><th>Kiasi (kg)</th><th>Bei/kg</th><th>Jumla</th></tr>
+            </thead>
+            <tbody>
+                {% for m in manunuzi %}
+                <tr>
+                    <td>{{ m.tarehe.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>{{ m.mvuvi.jina if m.mvuvi else '-' }}</td>
+                    <td>{{ m.kiasi_kg }}</td>
+                    <td>{{ "{:,.0f}".format(m.bei_kwa_kg) }}</td>
+                    <td>{{ "{:,.0f}".format(m.jumla) }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center text-muted">Hakuna manunuzi</td></tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="table-light">
+                <tr><th colspan="2" class="text-end">JUMLA:</th><th>{{ "%.1f"|format(in_jumla) }} kg</th><th colspan="2"></th></tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<!-- ===== MAUZO (OUT) ===== -->
+<div class="card p-3 mb-4">
+    <h5>📤 Mauzo (OUT) — {{ samaki.jina }}</h5>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped">
+            <thead style="background-color: #e2d9f3;">
+                <tr><th>Tarehe</th><th>Mteja</th><th>Kiasi (kg)</th><th>Bei/kg</th><th>Jumla</th><th>Malipo</th></tr>
+            </thead>
+            <tbody>
+                {% for m in mauzo %}
+                <tr>
+                    <td>{{ m.tarehe.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>{{ m.mteja.jina if m.mteja else 'Cash' }}</td>
+                    <td>{{ m.kiasi_kg }}</td>
+                    <td>{{ "{:,.0f}".format(m.bei_kwa_kg) }}</td>
+                    <td>{{ "{:,.0f}".format(m.jumla) }}</td>
+                    <td>
+                        {% if m.aina_ya_malipo == 'cash' %}
+                        <span class="badge bg-success">Cash</span>
+                        {% else %}
+                        <span class="badge bg-danger">Deni</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="text-center text-muted">Hakuna mauzo</td></tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="table-light">
+                <tr><th colspan="2" class="text-end">JUMLA:</th><th>{{ "%.1f"|format(out_jumla) }} kg</th><th colspan="3"></th></tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

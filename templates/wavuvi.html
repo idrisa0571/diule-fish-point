@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">🎣 Wavuvi</h2>
+
+<div class="card p-3 mb-4">
+    <h5>Ongeza Mvuvi Mpya</h5>
+    <form action="/wavuvi/ongeza" method="POST" class="row g-2">
+        <div class="col-md-4">
+            <input name="jina" class="form-control" placeholder="Jina la mvuvi" required>
+        </div>
+        <div class="col-md-4">
+            <input name="simu" class="form-control" placeholder="Simu">
+        </div>
+        <div class="col-md-3">
+            <input name="mahali" class="form-control" placeholder="Mahali">
+        </div>
+        <div class="col-md-1">
+            <button class="btn btn-primary w-100">+</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped bg-white align-middle">
+        <thead class="table-primary">
+            <tr><th>#</th><th>Jina</th><th>Simu</th><th>Mahali</th><th>Vitendo</th></tr>
+        </thead>
+        <tbody>
+            {% for w in wavuvi %}
+            <tr>
+                <td>{{ w.id }}</td>
+                <td>
+                    <span class="view-mode-{{ w.id }}">{{ w.jina }}</span>
+                    <input form="edit-form-{{ w.id }}" name="jina" value="{{ w.jina }}" class="form-control form-control-sm d-none edit-mode-{{ w.id }}">
+                </td>
+                <td>
+                    <span class="view-mode-{{ w.id }}">{{ w.simu or '-' }}</span>
+                    <input form="edit-form-{{ w.id }}" name="simu" value="{{ w.simu or '' }}" class="form-control form-control-sm d-none edit-mode-{{ w.id }}">
+                </td>
+                <td>
+                    <span class="view-mode-{{ w.id }}">{{ w.mahali or '-' }}</span>
+                    <input form="edit-form-{{ w.id }}" name="mahali" value="{{ w.mahali or '' }}" class="form-control form-control-sm d-none edit-mode-{{ w.id }}">
+                </td>
+                <td style="white-space: nowrap;">
+                    <form id="edit-form-{{ w.id }}" action="/wavuvi/edit/{{ w.id }}" method="POST" style="display:inline;">
+                        <button type="button" class="btn btn-sm btn-warning view-mode-{{ w.id }}" onclick="enableEdit({{ w.id }})">✏️</button>
+                        <button type="submit" class="btn btn-sm btn-success d-none edit-mode-{{ w.id }}">💾</button>
+                        <button type="button" class="btn btn-sm btn-secondary d-none edit-mode-{{ w.id }}" onclick="cancelEdit({{ w.id }})">✖️</button>
+                    </form>
+                    <form action="/wavuvi/delete/{{ w.id }}" method="POST" style="display:inline;" onsubmit="return confirm('Una uhakika unataka kufuta {{ w.jina }}?');">
+                        <button class="btn btn-sm btn-danger view-mode-{{ w.id }}">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted">Hakuna wavuvi bado</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function enableEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+}
+
+function cancelEdit(id) {
+    document.querySelectorAll('.view-mode-' + id).forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+    document.querySelectorAll('.edit-mode-' + id).forEach(function(el) {
+        el.classList.add('d-none');
+    });
+}
+</script>
+{% endblock %}

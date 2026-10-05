@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">📊 Chati za Mauzo</h2>
+
+<div class="card p-3 mb-4">
+    <h5>📈 Mapato ya Siku 7 Zilizopita</h5>
+    <canvas id="chatiSiku" height="80"></canvas>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <h5>🐟 Samaki Wanaouza Zaidi (Top 5)</h5>
+            <canvas id="chatiSamaki" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 h-100">
+            <h5>💰 Mapato vs Matumizi (Miezi 6)</h5>
+            <canvas id="chatiMiezi" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('chatiSiku'), {
+    type: 'line',
+    data: {
+        labels: {{ siku_7|tojson }},
+        datasets: [{
+            label: 'Mapato (TSh)',
+            data: {{ mapato_kwa_siku|tojson }},
+            borderColor: '#0d6efd',
+            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+            tension: 0.3,
+            fill: true,
+            pointRadius: 5,
+            pointBackgroundColor: '#0d6efd'
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { callback: function(v) { return v.toLocaleString(); } }
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('chatiSamaki'), {
+    type: 'doughnut',
+    data: {
+        labels: {{ samaki_labels|tojson }},
+        datasets: [{
+            data: {{ samaki_data|tojson }},
+            backgroundColor: ['#0d6efd', '#198754', '#fd7e14', '#dc3545', '#6f42c1']
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+                callbacks: {
+                    label: function(c) { return c.label + ': ' + c.parsed.toFixed(1) + ' kg'; }
+                }
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('chatiMiezi'), {
+    type: 'bar',
+    data: {
+        labels: {{ miezi_6|tojson }},
+        datasets: [
+            { label: 'Mapato', data: {{ mapato_kwa_mwezi|tojson }}, backgroundColor: '#198754' },
+            { label: 'Matumizi', data: {{ matumizi_kwa_mwezi|tojson }}, backgroundColor: '#dc3545' }
+        ]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { callback: function(v) { return v.toLocaleString(); } }
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
