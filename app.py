@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'siri_ya_samaki_2026'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///samaki.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres.fmsjtnacnjxzjalkbpx:PASSWORD_YAKO@aws-0-us-east-1.pooler.supabase.com:5432/postgres'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
