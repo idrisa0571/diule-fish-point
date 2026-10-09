@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5 col-lg-4">
+
+        <div class="text-center mb-4">
+            <div style="font-size: 4rem;">🐟</div>
+            <h2 style="color: #023e8a; font-weight: bold;">DIULE FISH POINT</h2>
+            <p class="tagline" style="font-size: 1rem;">Samaki Fresh Kila Siku</p>
+        </div>
+
+        <div class="card p-4">
+            <h4 class="text-center mb-4">🔐 Ingia / Login</h4>
+
+            <form method="POST" action="{{ url_for('login') }}">
+
+                <div class="mb-3">
+                    <label class="form-label">👤 Jina la Mtumiaji / Username</label>
+                    <input type="text" name="username" class="form-control" 
+                           placeholder="Weka username..." required autofocus>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">🔑 Password</label>
+                    <input type="password" name="password" class="form-control" 
+                           placeholder="Weka password..." required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" 
+                        style="background-color: #0077b6; border: none;">
+                    Ingia / Login
+                </button>
+
+            </form>
+
+            <hr class="mt-4">
+
+            <div class="text-center text-muted small">
+                <p class="mb-0">Mfumo wa Usimamizi wa Biashara ya Samaki</p>
+                <p class="mb-0">© 2025 DIULE FISH POINT</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

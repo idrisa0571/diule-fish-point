@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 style="color: #023e8a;">🎣 Wavuvi</h2>
+    <button class="btn btn-primary" style="background-color: #0077b6;" 
+            data-bs-toggle="modal" data-bs-target="#addModal">
+        ➕ Ongeza Mvuvi
+    </button>
+</div>
+
+<div class="card p-4">
+    {% if items %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Jina</th>
+                    <th>Simu</th>
+                    <th>Eneo</th>
+                    <th>Vitendo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in items %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><strong>{{ m.jina }}</strong></td>
+                    <td>
+                        {% if m.simu %}
+                            📱 {{ m.simu }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if m.eneo %}
+                            <span class="badge bg-info">{{ m.eneo }}</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" 
+                                data-bs-toggle="modal" data-bs-target="#editModal{{ m.id }}">
+                            ✏️
+                        </button>
+                        <a href="{{ url_for('wavuvi_delete', id=m.id) }}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Una uhakika unataka kufuta {{ m.jina }}?')">
+                            🗑️
+                        </a>
+                    </td>
+                </tr>
+
+                <!-- EDIT MODAL -->
+                <div class="modal fade" id="editModal{{ m.id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form method="POST" action="{{ url_for('wavuvi_edit', id=m.id) }}">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">✏️ Hariri: {{ m.jina }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Jina *</label>
+                                        <input type="text" name="jina" class="form-control" value="{{ m.jina }}" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Simu</label>
+                                        <input type="text" name="simu" class="form-control" value="{{ m.simu or '' }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Eneo</label>
+                                        <select name="eneo" class="form-select">
+                                            <option value="">-- Chagua --</option>
+                                            <option value="Ziwa" {% if m.eneo == 'Ziwa' %}selected{% endif %}>🌊 Ziwa</option>
+                                            <option value="Bahari" {% if m.eneo == 'Bahari' %}selected{% endif %}>🌊 Bahari</option>
+                                            <option value="Mto" {% if m.eneo == 'Mto' %}selected{% endif %}>🏞️ Mto</option>
+                                            <option value="Bwawa" {% if m.eneo == 'Bwawa' %}selected{% endif %}>💧 Bwawa</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Funga</button>
+                                    <button type="submit" class="btn btn-primary" style="background-color: #0077b6;">Hifadhi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center p-5 text-muted">
+        <div style="font-size: 4rem;">🎣</div>
+        <p>Bado hujaongeza mvuvi yeyote.</p>
+        <p class="small">Bonyeza "➕ Ongeza Mvuvi" kuanza.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('wavuvi_add') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">➕ Ongeza Mvuvi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Jina *</label>
+                        <input type="text" name="jina" class="form-control" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Simu</label>
+                        <input type="text" name="simu" class="form-control" placeholder="Mfano: 0755 123 456">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Eneo</label>
+                        <select name="eneo" class="form-select">
+                            <option value="">-- Chagua --</option>
+                            <option value="Ziwa">🌊 Ziwa</option>
+                            <option value="Bahari">🌊 Bahari</option>
+                            <option value="Mto">🏞️ Mto</option>
+                            <option value="Bwawa">💧 Bwawa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Funga</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: #0077b6;">Hifadhi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

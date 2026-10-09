@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 style="color: #023e8a;">📊 Dashboard</h2>
+        <p class="text-muted">Karibu, <strong>{{ current_user.username }}</strong>! 🐟</p>
+    </div>
+    <div class="text-end">
+        <span class="badge bg-primary p-2">Leo: {{ leo }}</span>
+    </div>
+</div>
+
+<!-- KADI 4 ZA MUHTASARI -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card p-3" style="border-left: 4px solid #0077b6;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Mauzo ya Leo</div>
+                    <h3 class="mb-0">TSh {{ "%.0f"|format(mauzo_leo) }}</h3>
+                </div>
+                <div style="font-size: 2.5rem;">📤</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card p-3" style="border-left: 4px solid #ff6b35;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Manunuzi ya Leo</div>
+                    <h3 class="mb-0">TSh {{ "%.0f"|format(manunuzi_leo) }}</h3>
+                </div>
+                <div style="font-size: 2.5rem;">📥</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card p-3" style="border-left: 4px solid #dc3545;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Gharama za Leo</div>
+                    <h3 class="mb-0">TSh {{ "%.0f"|format(gharama_leo) }}</h3>
+                </div>
+                <div style="font-size: 2.5rem;">💸</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card p-3" style="border-left: 4px solid {% if faida_leo >= 0 %}#28a745{% else %}#dc3545{% endif %};">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small">Faida ya Leo</div>
+                    <h3 class="mb-0" style="color: {% if faida_leo >= 0 %}#28a745{% else %}#dc3545{% endif %};">
+                        TSh {{ "%.0f"|format(faida_leo) }}
+                    </h3>
+                </div>
+                <div style="font-size: 2.5rem;">{% if faida_leo >= 0 %}📈{% else %}📉{% endif %}</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- WATEJA NA WAVUVI -->
+<div class="row g-3 mb-4">
+
+    <!-- WATEJA -->
+    <div class="col-md-6">
+        <div class="card p-3" style="border-top: 4px solid #0077b6;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">👥 Wateja</h5>
+                <span class="badge bg-primary">{{ wateja_zote|length }}</span>
+            </div>
+            {% if wateja_zote %}
+            <div style="max-height: 250px; overflow-y: auto;">
+                <ul class="list-group list-group-flush">
+                    {% for m in wateja_zote %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong>{{ m.jina }}</strong>
+                            {% if m.mahali %}<br><small class="text-muted">📍 {{ m.mahali }}</small>{% endif %}
+                        </div>
+                        {% if m.simu %}
+                        <small class="text-muted">📱 {{ m.simu }}</small>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <a href="{{ url_for('wateja_list') }}" class="btn btn-sm btn-outline-primary mt-2">
+                👁️ Ona wote / Manage
+            </a>
+            {% else %}
+            <p class="text-muted text-center mb-2">Bado hakuna wateja.</p>
+            <a href="{{ url_for('wateja_list') }}" class="btn btn-sm btn-primary" style="background-color: #0077b6;">
+                ➕ Ongeza Mteja
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- WAVUVI -->
+    <div class="col-md-6">
+        <div class="card p-3" style="border-top: 4px solid #00b4d8;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">🎣 Wavuvi</h5>
+                <span class="badge bg-info">{{ wavuvi_zote|length }}</span>
+            </div>
+            {% if wavuvi_zote %}
+            <div style="max-height: 250px; overflow-y: auto;">
+                <ul class="list-group list-group-flush">
+                    {% for w in wavuvi_zote %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <strong>{{ w.jina }}</strong>
+                            {% if w.eneo %}<br><small class="text-muted">🌊 {{ w.eneo }}</small>{% endif %}
+                        </div>
+                        {% if w.simu %}
+                        <small class="text-muted">📱 {{ w.simu }}</small>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <a href="{{ url_for('wavuvi_list') }}" class="btn btn-sm btn-outline-info mt-2">
+                👁️ Ona wote / Manage
+            </a>
+            {% else %}
+            <p class="text-muted text-center mb-2">Bado hakuna wavuvi.</p>
+            <a href="{{ url_for('wavuvi_list') }}" class="btn btn-sm btn-info">
+                ➕ Ongeza Mvuvi
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- STOCK YA SAMAKI -->
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">🐟 Stock ya Samaki</h4>
+        <a href="{{ url_for('samaki_list') }}" class="btn btn-sm btn-primary" style="background-color: #0077b6;">
+            👁️ Ona wote / Manage
+        </a>
+    </div>
+
+    {% if samaki_zote %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Jina</th>
+                    <th>Kipimo</th>
+                    <th>Bei ya Kuuza</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in samaki_zote %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><strong>{{ s.jina }}</strong></td>
+                    <td><span class="badge bg-info">{{ s.kipimo }}</span></td>
+                    <td>TSh {{ "%.0f"|format(s.bei_kuuza) }}</td>
+                    <td>
+                        {% if s.stock > 0 %}
+                            <span class="badge bg-success">{{ s.stock }}</span>
+                        {% else %}
+                            <span class="badge bg-danger">Hakuna</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center p-5 text-muted">
+        <div style="font-size: 4rem;">🐟</div>
+        <p>Bado hujaongeza samaki yeyote.</p>
+        <p class="small">Tumia menu "🐟 Samaki" kuanza.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

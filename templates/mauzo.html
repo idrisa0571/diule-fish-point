@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 style="color: #023e8a;">📤 Mauzo</h2>
+    <button class="btn btn-success" 
+            data-bs-toggle="modal" data-bs-target="#addModal">
+        ➕ Ongeza Mauzo
+    </button>
+</div>
+
+<!-- ORODHA YA MAUZO -->
+<div class="card p-4">
+    {% if items %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Tarehe</th>
+                    <th>Samaki</th>
+                    <th>Mteja</th>
+                    <th>Kiasi</th>
+                    <th>Bei</th>
+                    <th>Malipo</th>
+                    <th>Jumla</th>
+                    <th>Vitendo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in items %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ m.tarehe }}</td>
+                    <td>
+                        <strong>{{ m.samaki.jina if m.samaki else '-' }}</strong>
+                    </td>
+                    <td>
+                        {% if m.mteja %}
+                            👤 {{ m.mteja.jina }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ m.kiasi }} {{ m.samaki.kipimo if m.samaki else '' }}</td>
+                    <td>TSh {{ "%.0f"|format(m.bei) }}</td>
+                    <td>
+                        {% if m.malipo == 'cash' %}
+                            <span class="badge bg-success">💵 Cash</span>
+                        {% elif m.malipo == 'mpesa' %}
+                            <span class="badge bg-primary">📱 M-Pesa</span>
+                        {% elif m.malipo == 'bank' %}
+                            <span class="badge bg-info">🏦 Bank</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ m.malipo }}</span>
+                        {% endif %}
+                    </td>
+                    <td><strong style="color: #28a745;">TSh {{ "%.0f"|format(m.jumla) }}</strong></td>
+                    <td>
+                        <a href="{{ url_for('mauzo_delete', id=m.id) }}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Una uhakika unataka kufuta mauzo haya? Stock itarudi.')">
+                            🗑️
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center p-5 text-muted">
+        <div style="font-size: 4rem;">📤</div>
+        <p>Bado hakuna mauzo yaliyorekodiwa.</p>
+        <p class="small">Bonyeza "➕ Ongeza Mauzo" kuanza.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('mauzo_add') }}">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">➕ Ongeza Mauzo</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tarehe *</label>
+                            <input type="date" name="tarehe" class="form-control" 
+                                   value="{{ leo }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Samaki *</label>
+                            <select name="samaki_id" class="form-select" required>
+                                <option value="">-- Chagua Samaki --</option>
+                                {% for s in samaki_zote %}
+                                <option value="{{ s.id }}">
+                                    {{ s.jina }} (stock: {{ s.stock }} {{ s.kipimo }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- MTEJA DROPDOWN -->
+                    <div class="mb-3">
+                        <label class="form-label">👤 Mteja (hiari)</label>
+                        <select name="mteja_id" class="form-select">
+                            <option value="">-- Hakuna mteja --</option>
+                            {% for mt in wateja %}
+                            <option value="{{ mt.id }}">
+                                {{ mt.jina }}{% if mt.mahali %} ({{ mt.mahali }}){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if not wateja %}
+                        <small class="text-muted">💡 Unaweza kuongeza wateja kwenye menu ya 👥 Wateja</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Kiasi *</label>
+                            <input type="number" step="0.01" name="kiasi" class="form-control" 
+                                   placeholder="Mfano: 5" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bei ya Kuuza (TSh) *</label>
+                            <input type="number" step="0.01" name="bei" class="form-control" 
+                                   placeholder="Mfano: 8000" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Malipo</label>
+                        <select name="malipo" class="form-select">
+                            <option value="cash">💵 Cash</option>
+                            <option value="mpesa">📱 M-Pesa</option>
+                            <option value="bank">🏦 Bank</option>
+                        </select>
+                    </div>
+
+                    <div class="alert alert-warning small mb-0">
+                        ⚠️ <strong>Kumbuka:</strong> Stock ya samaki itapungua mara moja baada ya kuuza.
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Funga</button>
+                    <button type="submit" class="btn btn-success">Hifadhi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

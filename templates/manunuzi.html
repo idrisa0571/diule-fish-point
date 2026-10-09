@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 style="color: #023e8a;">📥 Manunuzi</h2>
+    <button class="btn btn-primary" style="background-color: #0077b6;" 
+            data-bs-toggle="modal" data-bs-target="#addModal">
+        ➕ Ongeza Manunuzi
+    </button>
+</div>
+
+<!-- ORODHA YA MANUNUZI -->
+<div class="card p-4">
+    {% if items %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Tarehe</th>
+                    <th>Samaki</th>
+                    <th>Mvuvi</th>
+                    <th>Kiasi</th>
+                    <th>Bei</th>
+                    <th>ZIADA</th>
+                    <th>Jumla</th>
+                    <th>Vitendo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in items %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ m.tarehe }}</td>
+                    <td>
+                        <strong>{{ m.samaki.jina if m.samaki else '-' }}</strong>
+                        {% if m.maelezo %}
+                        <br><small class="text-muted">📝 {{ m.maelezo }}</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if m.mvuvi %}
+                            🎣 {{ m.mvuvi.jina }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ m.kiasi }} {{ m.samaki.kipimo if m.samaki else '' }}</td>
+                    <td>TSh {{ "%.0f"|format(m.bei) }}</td>
+                    <td>
+                        {% set ziada = m.usafiri + m.barafu + m.nyingine %}
+                        {% if ziada > 0 %}
+                            <span class="badge bg-warning text-dark" 
+                                  style="cursor: pointer; font-size: 0.9rem;"
+                                  data-bs-toggle="tooltip" 
+                                  data-bs-html="true"
+                                  data-bs-placement="top"
+                                  title="<div style='text-align:left;'>
+                                            <strong>💡 Gharama za Ziada:</strong><br>
+                                            🚚 Usafiri: TSh {{ '%.0f'|format(m.usafiri) }}<br>
+                                            🧊 Barafu: TSh {{ '%.0f'|format(m.barafu) }}<br>
+                                            ➕ Nyingine: TSh {{ '%.0f'|format(m.nyingine) }}
+                                            {% if m.maelezo %}<br>📝 {{ m.maelezo }}{% endif %}
+                                          </div>">
+                                TSh {{ "%.0f"|format(ziada) }} ⓘ
+                            </span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td><strong style="color: #dc3545;">TSh {{ "%.0f"|format(m.jumla) }}</strong></td>
+                    <td>
+                        <a href="{{ url_for('manunuzi_delete', id=m.id) }}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Una uhakika unataka kufuta manunuzi haya?')">
+                            🗑️
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center p-5 text-muted">
+        <div style="font-size: 4rem;">📥</div>
+        <p>Bado hakuna manunuzi yaliyorekodiwa.</p>
+        <p class="small">Bonyeza "➕ Ongeza Manunuzi" kuanza.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('manunuzi_add') }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">➕ Ongeza Manunuzi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tarehe *</label>
+                            <input type="date" name="tarehe" class="form-control" 
+                                   value="{{ leo }}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Samaki *</label>
+                            <select name="samaki_id" class="form-select" required>
+                                <option value="">-- Chagua Samaki --</option>
+                                {% for s in samaki_zote %}
+                                <option value="{{ s.id }}">{{ s.jina }} ({{ s.kipimo }})</option>
+                                {% endfor %}
+                            </select>
+                            {% if not samaki_zote %}
+                            <small class="text-danger">⚠️ Hakuna samaki. Ongeza samaki kwanza!</small>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- MVUVI DROPDOWN -->
+                    <div class="mb-3">
+                        <label class="form-label">🎣 Mvuvi (hiari)</label>
+                        <select name="mvuvi_id" class="form-select">
+                            <option value="">-- Hakuna mvuvi --</option>
+                            {% for w in wavuvi %}
+                            <option value="{{ w.id }}">
+                                {{ w.jina }}{% if w.eneo %} ({{ w.eneo }}){% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if not wavuvi %}
+                        <small class="text-muted">💡 Unaweza kuongeza wavuvi kwenye menu ya 🎣 Wavuvi</small>
+                        {% endif %}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Kiasi *</label>
+                            <input type="number" step="0.01" name="kiasi" class="form-control" 
+                                   placeholder="Mfano: 10" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Bei kwa Kipimo (TSh) *</label>
+                            <input type="number" step="0.01" name="bei" class="form-control" 
+                                   placeholder="Mfano: 5000" required>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <p class="text-muted small mb-2">💰 Gharama za Ziada:</p>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">🚚 Usafiri (TSh)</label>
+                            <input type="number" step="0.01" name="usafiri" class="form-control" value="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">🧊 Barafu (TSh)</label>
+                            <input type="number" step="0.01" name="barafu" class="form-control" value="0">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">➕ Nyingine (TSh)</label>
+                            <input type="number" step="0.01" name="nyingine" class="form-control" value="0">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">📝 Maelezo ya Gharama Nyingine</label>
+                        <input type="text" name="maelezo" class="form-control" 
+                               placeholder="Mfano: Kodi ya jengo, mafuta, posho, n.k.">
+                    </div>
+
+                    <div class="alert alert-info small mb-0">
+                        💡 <strong>Jumla</strong> = (Kiasi × Bei) + Usafiri + Barafu + Nyingine
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Funga</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: #0077b6;">Hifadhi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT YA TOOLTIP -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+
+{% endblock %}
