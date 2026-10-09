@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📊 Dashboard</h2>
+    <span class="badge bg-primary fs-6">📅 {{ leo.strftime('%d/%m/%Y') }}</span>
+</div>
+
+<!-- ===== BOXES 8 ===== -->
+<div class="row g-3 mb-4">
+
+    <!-- 1. Stock (kg) -->
+    <div class="col-6 col-md-3">
+        <div class="card card-stat green p-3 h-100">
+            <small class="text-muted">🐟 Stock (kg)</small>
+            <h3>{{ "%.1f"|format(jumla_stock_kg) }} kg</h3>
+            <small class="text-muted">Jumla: {{ "%.1f"|format(kilo_in_yote - kilo_out_yote) }} kg</small>
+        </div>
+    </div>
+
+    <!-- 2. Thamani ya Stock -->
+    <div class="col-6 col-md-3">
+        <div class="card card-stat p-3 h-100">
+            <small class="text-muted">💰 Thamani ya Stock</small>
+            <h3>{{ "{:,.0f}".format(thamani_stock) }} TSh</h3>
+        </div>
+    </div>
+
+    <!-- 3. Mapato ya Leo -->
+    <div class="col-6 col-md-3">
+        <div class="card card-stat orange p-3 h-100">
+            <small class="text-muted">💵 Mapato ya Leo</small>
+            <h3>{{ "{:,.0f}".format(mapato_leo) }} TSh</h3>
+            <small class="text-muted">Jumla: {{ "{:,.0f}".format(mapato_yote) }}</small>
+        </div>
+    </div>
+
+    <!-- 4. Matumizi ya Leo -->
+    <div class="col-6 col-md-3">
+        <div class="card card-stat red p-3 h-100">
+            <small class="text-muted">💸 Matumizi ya Leo</small>
+            <h3>{{ "{:,.0f}".format(matumizi_leo) }} TSh</h3>
+            <small class="text-muted">Jumla: {{ "{:,.0f}".format(matumizi_yote) }}</small>
+        </div>
+    </div>
+
+    <!-- 5. Faida ya Leo -->
+    <div class="col-6 col-md-3">
+        <div class="card card-stat {% if faida_leo >= 0 %}green{% else %}red{% endif %} p-3 h-100">
+            <small class="text-muted">📈 Faida ya Leo</small>
+            <h3 class="{% if faida_leo >= 0 %}text-success{% else %}text-danger{% endif %}">
+                {{ "{:,.0f}".format(faida_leo) }} TSh
+            </h3>
+            <small class="text-muted">Jumla: {{ "{:,.0f}".format(faida_yote) }}</small>
+        </div>
+    </div>
+
+    <!-- 6. Madeni Yote -->
+    <div class="col-6 col-md-3">
+        <div class="card card-stat red p-3 h-100">
+            <small class="text-muted">🔴 Madeni Yote</small>
+            <h3 class="text-danger">{{ "{:,.0f}".format(madeni_yote) }} TSh</h3>
+        </div>
+    </div>
+
+    <!-- 7. Kilo Zilizoingia Leo -->
+    <div class="col-6 col-md-3">
+        <div class="card card-stat p-3 h-100" style="border-left-color: #0dcaf0;">
+            <small class="text-muted">📥 Kilo Zilizoingia Leo</small>
+            <h3 class="text-info">{{ "%.1f"|format(kilo_in_leo) }} kg</h3>
+            <small class="text-muted">Jumla: {{ "%.1f"|format(kilo_in_yote) }}</small>
+        </div>
+    </div>
+
+    <!-- 8. Kilo Zilizotoka Leo -->
+    <div class="col-6 col-md-3">
+        <div class="card card-stat p-3 h-100" style="border-left-color: #6f42c1;">
+            <small class="text-muted">📤 Kilo Zilizotoka Leo</small>
+            <h3 style="color: #6f42c1;">{{ "%.1f"|format(kilo_out_leo) }} kg</h3>
+            <small class="text-muted">Jumla: {{ "%.1f"|format(kilo_out_yote) }}</small>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== JEDWALI LA SAMAKI ===== -->
+<h4 class="mt-4">🐟 Samaki Waliopo (IN / OUT / Balance)</h4>
+<div class="table-responsive">
+    <table class="table table-striped bg-white">
+        <thead class="table-primary">
+            <tr>
+                <th>Jina</th>
+                <th>Aina</th>
+                <th>📥 IN (kg)</th>
+                <th>📤 OUT (kg)</th>
+                <th>🐟 Balance (kg)</th>
+                <th>Bei Kununua</th>
+                <th>Bei Kuuza</th>
+                <th>💰 Thamani (TSh)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in samaki_habari %}
+            <tr>
+                <td><strong>{{ s.jina }}</strong></td>
+                <td>{{ s.aina or '-' }}</td>
+                <td class="text-info">{{ "%.1f"|format(s['in']) }}</td>
+                <td style="color: #6f42c1;">{{ "%.1f"|format(s.out) }}</td>
+                <td>
+                    {% if s.balance > 0 %}
+                    <span class="badge bg-success fs-6">{{ "%.1f"|format(s.balance) }} kg</span>
+                    {% elif s.balance == 0 %}
+                    <span class="badge bg-secondary fs-6">0 kg</span>
+                    {% else %}
+                    <span class="badge bg-danger fs-6">{{ "%.1f"|format(s.balance) }} kg</span>
+                    {% endif %}
+                </td>
+                <td>{{ "{:,.0f}".format(s.bei_kununua) }}</td>
+                <td>{{ "{:,.0f}".format(s.bei_kuuza) }}</td>
+                <td><strong>{{ "{:,.0f}".format(s.thamani) }}</strong></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" class="text-center text-muted">Hakuna samaki bado</td></tr>
+            {% endfor %}
+        </tbody>
+        <tfoot class="table-light">
+            <tr>
+                <th colspan="4" class="text-end">JUMLA:</th>
+                <th>{{ "%.1f"|format(jumla_stock_kg) }} kg</th>
+                <th colspan="2"></th>
+                <th>{{ "{:,.0f}".format(thamani_stock) }} TSh</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}

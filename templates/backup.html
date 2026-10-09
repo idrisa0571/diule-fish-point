@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4">💾 Backup ya Database</h2>
+
+<div class="alert alert-info">
+    <strong>ℹ️ Maelezo:</strong> Backup inanakili database yako yote (samaki, mauzo, wateja, n.k.)
+    kwenye folder la <code>backup\</code>. Unaweza kuipakua kwa USB au email kama ulinzi wa ziada.
+</div>
+
+<!-- ===== KITUFE CHA BACKUP ===== -->
+<div class="card p-4 mb-4 text-center">
+    <h5>Fanya Backup Mpya</h5>
+    <p class="text-muted">Inachukua sekunde 1 tu.</p>
+    <form action="/backup/fanya" method="POST">
+        <button class="btn btn-primary btn-lg">💾 Fanya Backup Sasa</button>
+    </form>
+</div>
+
+<!-- ===== ORODHA YA BACKUPS ===== -->
+<h5>📂 Backups Zilizopo</h5>
+<div class="table-responsive">
+    <table class="table table-striped bg-white">
+        <thead class="table-primary">
+            <tr>
+                <th>#</th>
+                <th>Jina la File</th>
+                <th>Tarehe</th>
+                <th>Ukubwa</th>
+                <th>Vitendo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in backups %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><code>{{ b.jina }}</code></td>
+                <td>{{ b.tarehe.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ "%.1f"|format(b.ukubwa / 1024) }} KB</td>
+                <td>
+                    <a href="/backup/pakua/{{ b.jina }}" class="btn btn-sm btn-success">⬇️ Pakua</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted">Hakuna backup bado. Bonyeza kitufe juu.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="alert alert-warning mt-4">
+    <strong>⚠️ Ushauri:</strong>
+    <ul class="mb-0">
+        <li>Fanya backup <strong>mara kwa mara</strong> (kila siku au wiki)</li>
+        <li>Pakua backup kwenye <strong>USB</strong> au tuma kwa <strong>email</strong></li>
+        <li>Hifadhi backups za zamani (usifute zote)</li>
+    </ul>
+</div>
+{% endblock %}

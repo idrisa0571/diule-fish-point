@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>📄 Stock Kamili</h2>
+    <a href="/stock" class="btn btn-sm btn-outline-primary">🔄 Onyesha Yote</a>
+</div>
+
+<!-- ===== CHUJA KWA TAREHE ===== -->
+<div class="card p-3 mb-4">
+    <h6>🗓️ Chuja kwa Tarehe</h6>
+    <form method="GET" action="/stock" class="row g-2">
+        <div class="col-md-4">
+            <label class="form-label small">Kutoka</label>
+            <input type="date" name="kutoka" value="{{ tarehe_kutoka }}" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label small">Hadi</label>
+            <input type="date" name="hadi" value="{{ tarehe_hadi }}" class="form-control">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button class="btn btn-primary w-100">Chuja</button>
+        </div>
+    </form>
+</div>
+
+<!-- ===== BOXES 4 ===== -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card card-stat p-3 h-100" style="border-left-color: #0dcaf0;">
+            <small class="text-muted">📥 Jumla IN</small>
+            <h3 class="text-info">{{ "%.1f"|format(jumla_in) }} kg</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card card-stat p-3 h-100" style="border-left-color: #6f42c1;">
+            <small class="text-muted">📤 Jumla OUT</small>
+            <h3 style="color: #6f42c1;">{{ "%.1f"|format(jumla_out) }} kg</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card card-stat green p-3 h-100">
+            <small class="text-muted">🐟 Balance</small>
+            <h3 class="text-success">{{ "%.1f"|format(jumla_balance) }} kg</h3>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card card-stat orange p-3 h-100">
+            <small class="text-muted">💰 Thamani</small>
+            <h3>{{ "{:,.0f}".format(jumla_thamani) }} TSh</h3>
+        </div>
+    </div>
+</div>
+
+<!-- ===== JEDWALI ===== -->
+<div class="table-responsive">
+    <table class="table table-striped bg-white align-middle">
+        <thead class="table-primary">
+            <tr>
+                <th>Jina</th><th>Aina</th>
+                <th>📥 IN (kg)</th><th>📤 OUT (kg)</th>
+                <th>🐟 Balance (kg)</th>
+                <th>Bei Kununua</th><th>Bei Kuuza</th>
+                <th>💰 Thamani (TSh)</th>
+                <th>Vitendo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in samaki_habari %}
+            <tr>
+                <td><strong>{{ s.jina }}</strong></td>
+                <td>{{ s.aina or '-' }}</td>
+                <td class="text-info">{{ "%.1f"|format(s['in']) }}</td>
+                <td style="color: #6f42c1;">{{ "%.1f"|format(s.out) }}</td>
+                <td>
+                    {% if s.balance > 0 %}
+                    <span class="badge bg-success fs-6">{{ "%.1f"|format(s.balance) }} kg</span>
+                    {% elif s.balance == 0 %}
+                    <span class="badge bg-secondary fs-6">0 kg</span>
+                    {% else %}
+                    <span class="badge bg-danger fs-6">{{ "%.1f"|format(s.balance) }} kg</span>
+                    {% endif %}
+                </td>
+                <td>{{ "{:,.0f}".format(s.bei_kununua) }}</td>
+                <td>{{ "{:,.0f}".format(s.bei_kuuza) }}</td>
+                <td><strong>{{ "{:,.0f}".format(s.thamani) }}</strong></td>
+                <td>
+                    <a href="/stock/undani/{{ s.id }}" class="btn btn-sm btn-info">📋 Undani</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="9" class="text-center text-muted">Hakuna samaki bado</td></tr>
+            {% endfor %}
+        </tbody>
+        <tfoot class="table-light">
+            <tr>
+                <th colspan="2" class="text-end">JUMLA:</th>
+                <th class="text-info">{{ "%.1f"|format(jumla_in) }}</th>
+                <th style="color: #6f42c1;">{{ "%.1f"|format(jumla_out) }}</th>
+                <th class="text-success">{{ "%.1f"|format(jumla_balance) }} kg</th>
+                <th colspan="2"></th>
+                <th>{{ "{:,.0f}".format(jumla_thamani) }} TSh</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}
