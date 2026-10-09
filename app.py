@@ -17,19 +17,8 @@ import os
 # ============================================
 
 app = Flask(__name__)
-app_env = os.environ.get('APP_ENV', 'development')
-secret_key = os.environ.get('SECRET_KEY')
-database_url = os.environ.get('DATABASE_URL')
-
-if app_env == 'production' and not secret_key:
-    raise RuntimeError('SECRET_KEY lazima iwekwe kwenye mazingira ya production.')
-if app_env == 'production' and not database_url:
-    raise RuntimeError('DATABASE_URL lazima iwekwe kwenye mazingira ya production.')
-
-app.config['SECRET_KEY'] = secret_key or os.urandom(32)
-if database_url and database_url.startswith('postgres://'):
-    database_url = database_url.replace('postgres://', 'postgresql://', 1)
-app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///database.db'
+app.config['SECRET_KEY'] = 'diule-fish-point-siri-2025'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -590,29 +579,23 @@ def ripoti_export():
 def init_db():
     with app.app_context():
         db.create_all()
-        admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
-        if not User.query.filter_by(username=admin_username).first():
-            admin_password = os.environ.get('ADMIN_PASSWORD')
-            if not admin_password:
-                raise RuntimeError(
-                    'Weka ADMIN_PASSWORD kabla ya kuanzisha database mpya.'
-                )
+        if not User.query.filter_by(username='admin').first():
             u = User(
-                username=admin_username,
-                password=generate_password_hash(admin_password),
+                username='admin',
+                password=generate_password_hash('admin123'),
                 role='admin'
             )
             db.session.add(u)
             db.session.commit()
-            print(f"Mtumiaji wa kwanza ameundwa: {admin_username}")
+            print("✅ Mtumiaji wa kwanza ameundwa / First user created")
+            print("   Username: admin")
+            print("   Password: admin123")
 
 # ============================================
 # KUKIMBIZA APP
 # ============================================
-
-init_db()
-
 if __name__ == '__main__':
     print("🐟 DIULE FISH POINT - Inaanza...")
+    init_db()
     port = int(os.environ.get('PORT', 5000))
     app.run(debug=False, host='0.0.0.0', port=port)
