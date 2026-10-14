@@ -571,6 +571,27 @@ def ripoti_export():
     output.headers['Content-Type'] = 'text/csv; charset=utf-8'
     output.headers['Content-Disposition'] = f'attachment; filename=ripoti_mauzo_{kuanzia}_{hadi}.csv'
     return output
+# ============================================
+# BACKUP
+# ============================================
+
+@app.route('/backup')
+@login_required
+def backup_database():
+    """Download database kama backup"""
+    from flask import send_file
+    import os
+    db_path = os.path.join(app.instance_path, 'database.db')
+    if os.path.exists(db_path):
+        return send_file(
+            db_path,
+            as_attachment=True,
+            download_name=f'diule_backup_{date.today()}.db'
+        )
+    flash('Database haipo / Database not found', 'danger')
+    return redirect(url_for('dashboard'))
+
+
 
 # ============================================
 # KUTENGENEZA DATABASE NA USER WA KWANZA
