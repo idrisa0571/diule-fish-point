@@ -571,6 +571,57 @@ def ripoti_export():
     output.headers['Content-Type'] = 'text/csv; charset=utf-8'
     output.headers['Content-Disposition'] = f'attachment; filename=ripoti_mauzo_{kuanzia}_{hadi}.csv'
     return output
+
+# ============================================
+# GHARAMA (EXPENSES)
+# ============================================
+
+@app.route('/gharama')
+@login_required
+def gharama_list():
+    items = Gharama.query.order_by(Gharama.tarehe.desc(), Gharama.id.desc()).all()
+    jumla = sum(g.kiasi for g in items)
+    return render_template('gharama.html',
+        items=items,
+        jumla=jumla,
+        leo=date.today().strftime('%Y-%m-%d')
+    )
+
+
+@app.route('/gharama/add', methods=['POST'])
+@login_required
+def gharama_add():
+    try:
+        kiasi = float(request.form['kiasi'])
+    except ValueError:
+        flash('Tafadhali jaza namba sahihi', 'danger')
+        return redirect(url_for('gharama_list'))
+
+    if kiasi <= 0:
+        flash('Kiasi kinatakiwa kiwe zaidi ya 0', 'danger')
+        return redirect(url_for('gharama_list'))
+
+    g = Gharama(
+        tarehe=datetime.strptime(request.form['tarehe'], '%Y-%m-%d').date(),
+        aina=request.form.get('aina', '').strip(),
+        maelezo=request.form.get('maelezo', '').strip(),
+        kiasi=kiasi
+    )
+    db.session.add(g)
+    db.session.commit()
+    flash(f'Gharama ya TSh {kiasi:,.0f} imeongezwa', 'success')
+    return redirect(url_for('gharama_list'))
+
+
+@app.route('/gharama/delete/<int:id>')
+@login_required
+def gharama_delete(id):
+    g = Gharama.query.get_or_404(id)
+    db.session.delete(g)
+    db.session.commit()
+    flash('Gharama imefutwa', 'warning')
+    return redirect(url_for('gharama_list'))
+
 # ============================================
 # BACKUP
 # ============================================

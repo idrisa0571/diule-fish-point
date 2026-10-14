@@ -305,10 +305,12 @@
         <a href="{{ url_for('manunuzi_list') }}" class="sidebar-link">📥 Manunuzi</a>
         <a href="{{ url_for('wateja_list') }}" class="sidebar-link">👥 Wateja</a>
         <a href="{{ url_for('mauzo_list') }}" class="sidebar-link">📤 Mauzo</a>
-       <a href="{{ url_for('ripoti') }}" class="sidebar-link">📈 Ripoti</a>
-<hr style="border-color: rgba(201, 169, 97, 0.3); margin: 14px 24px;">
-<a href="{{ url_for('backup_database') }}" class="sidebar-link">💾 Backup</a>
-<a href="{{ url_for('logout') }}" class="sidebar-link logout">🚪 Toka / Logout</a>        {% endif %}
+        <a href="{{ url_for('ripoti') }}" class="sidebar-link">📈 Ripoti</a>
+        <a href="{{ url_for('gharama_list') }}" class="sidebar-link">💰 Gharama</a>
+        <hr style="border-color: rgba(201, 169, 97, 0.3); margin: 14px 24px;">
+        <a href="{{ url_for('backup_database') }}" class="sidebar-link">💾 Backup</a>
+        <a href="{{ url_for('logout') }}" class="sidebar-link logout">🚪 Toka / Logout</a>
+        {% endif %}
     </div>
 </div>
 

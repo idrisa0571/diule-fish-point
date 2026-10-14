@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 style="color: #023e8a;">💰 Gharama</h2>
+    <button class="btn btn-danger" 
+            data-bs-toggle="modal" data-bs-target="#addModal">
+        ➕ Ongeza Gharama
+    </button>
+</div>
+
+<!-- KADI YA JUMLA -->
+<div class="row g-3 mb-4">
+    <div class="col-md-12">
+        <div class="card p-4" style="background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); color: white;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div style="opacity: 0.8; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase;">Jumla ya Gharama Zote</div>
+                    <h2 class="mb-0" style="font-weight: 800;">TSh {{ "%.0f"|format(jumla) }}</h2>
+                </div>
+                <div style="font-size: 3rem;">💸</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ORODHA -->
+<div class="card p-4">
+    {% if items %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Tarehe</th>
+                    <th>Aina</th>
+                    <th>Maelezo</th>
+                    <th>Kiasi</th>
+                    <th>Vitendo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for g in items %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ g.tarehe }}</td>
+                    <td>
+                        {% if g.aina %}
+                            <span class="badge bg-secondary">{{ g.aina }}</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ g.maelezo or '—' }}</td>
+                    <td><strong style="color: #dc3545;">TSh {{ "%.0f"|format(g.kiasi) }}</strong></td>
+                    <td>
+                        <a href="{{ url_for('gharama_delete', id=g.id) }}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Una uhakika unataka kufuta gharama hii?')">
+                            🗑️
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center p-5 text-muted">
+        <div style="font-size: 4rem;">💰</div>
+        <p>Bado hakuna gharama zilizorekodiwa.</p>
+        <p class="small">Bonyeza "➕ Ongeza Gharama" kuanza.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- ADD MODAL -->
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{{ url_for('gharama_add') }}">
+                <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);">
+                    <h5 class="modal-title text-white">➕ Ongeza Gharama</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label">Tarehe *</label>
+                        <input type="date" name="tarehe" class="form-control" 
+                               value="{{ leo }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Aina ya Gharama</label>
+                        <select name="aina" class="form-select">
+                            <option value="">-- Chagua --</option>
+                            <option value="Kodi">🏠 Kodi ya Jengo</option>
+                            <option value="Umeme">💡 Umeme</option>
+                            <option value="Maji">💧 Maji</option>
+                            <option value="Mafuta">⛽ Mafuta</option>
+                            <option value="Posho">💼 Posho</option>
+                            <option value="Usafiri">🚚 Usafiri</option>
+                            <option value="Mshahara">👷 Mshahara</option>
+                            <option value="Matengenezo">🔧 Matengenezo</option>
+                            <option value="Nyingine">➕ Nyingine</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Maelezo</label>
+                        <input type="text" name="maelezo" class="form-control" 
+                               placeholder="Mfano: Kodi ya mwezi Oktoba">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Kiasi (TSh) *</label>
+                        <input type="number" step="0.01" name="kiasi" class="form-control" 
+                               placeholder="Mfano: 50000" required>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Funga</button>
+                    <button type="submit" class="btn btn-danger">Hifadhi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
